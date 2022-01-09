@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
-* Студент: [Gaukhar Kashaganova](https://up.htmlacademy.ru/nodejs/3/user/1605855).
-* Наставник: `Неизвестно`.
+- Студент: [Gaukhar Kashaganova](https://up.htmlacademy.ru/nodejs/3/user/1605855).
+- Наставник: `Юрий Кучма`.
 
 ---
 
