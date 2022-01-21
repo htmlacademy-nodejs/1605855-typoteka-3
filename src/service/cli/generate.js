@@ -2,6 +2,8 @@
 
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
+const path = require('path');
+
 const {
   getRandomInt,
   shuffle,
@@ -13,40 +15,54 @@ const {
   DATES
 } = require(`../constants`);
 
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
+const FILE_SENTENCES_PATH = `sentences.txt`;
+const FILE_TITLES_PATH = `titles.txt`;
+const FILE_CATEGORIES_PATH = `categories.txt`;
+const dirname = `./data/`
 
 const readContent = async (filePath) => {
   try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.trim().split(`\n`);
+    let  content = await fs.readFile(filePath, `utf8`);
+    content = content.replace(/ +/g, ' ');
+    content = content.replace(/^\s+|\s+$/gm,'')
+    content = content.trim().split(`\n`);
+
+    return content
+
   } catch (err) {
     console.error(chalk.red(err));
     return [];
   }
 };
 
-const generateOffers = (count, titles, categories, sentences) => (
+const generateOffers = (count, options) => (
   Array(count).fill({}).map(() => ({
-  title: titles[getRandomInt(0, titles.length - 1)],
-  announce: shuffle(sentences).slice(1, 5).join(' '),
-  fullText: shuffle(sentences).slice(1, 10).join(' '),
+  title: options.titles[getRandomInt(0, options.titles.length - 1)],
+  announce: shuffle(options.sentences).slice(1, 5).join(' '),
+  fullText: shuffle(options.sentences).slice(1, 10).join(' '),
   createdDate: DATES[getRandomInt(0, DATES.length - 1)],
-  category: [categories[getRandomInt(0, categories.length - 1)]],
+  category: [options.categories[getRandomInt(0, options.categories.length - 1)]],
   }))
 );
 
 module.exports = {
   name: '--generate',
   async run(args) {
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
+    const [titles, categories, sentences] = await Promise.all([
+      readContent(path.join(dirname, FILE_SENTENCES_PATH)),
+      readContent(path.join(dirname, FILE_TITLES_PATH)),
+      readContent(path.join(dirname, FILE_CATEGORIES_PATH))
+    ])
+
+    const options = {
+      titles, 
+      categories,
+      sentences
+    }
 
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences));
+    const content = JSON.stringify(generateOffers(countOffer, options));
 
     try {
       await fs.writeFile(FILE_NAME, content);
