@@ -1,0 +1,10 @@
+extends layout.pug
+
+block content
+  include partials/header-post-user.pug
+  main 
+    section.post
+      h1.visually-hidden Пост
+      include sections/post.pug
+      include sections/comments.pug
+      p.comments__error Сообщение не может быть пустым, напишите что-нибудь!

@@ -1,0 +1,9 @@
+extends layout.pug
+
+block content
+  include partials/header-main.pug
+  main 
+    section.post
+      h1.visually-hidden Пост
+      include sections/post.pug
+      include sections/no-comments.pug
